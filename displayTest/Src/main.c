@@ -89,6 +89,14 @@ uint8_t frame = 0;
 uint8_t tranceve_array [MAX_FRAME] [TRANCIEVE_ARRAY_SIZE];
 uint8_t recieve_array [RECIEVE_BUFFER_SIZE];
 char *ptr_char0;
+memset (&tranceve_array[0][0], 0x01, TRANCIEVE_ARRAY_SIZE);
+memset (&tranceve_array[1][0], 0x02, TRANCIEVE_ARRAY_SIZE);
+memset (&tranceve_array[2][0], 0x04, TRANCIEVE_ARRAY_SIZE);
+memset (&tranceve_array[3][0], 0x08, TRANCIEVE_ARRAY_SIZE);
+memset (&tranceve_array[4][0], 0x10, TRANCIEVE_ARRAY_SIZE);
+memset (&tranceve_array[5][0], 0x20, TRANCIEVE_ARRAY_SIZE);
+memset (&tranceve_array[6][0], 0x40, TRANCIEVE_ARRAY_SIZE);
+memset (&tranceve_array[7][0], 0x80, TRANCIEVE_ARRAY_SIZE);
 
   /* USER CODE BEGIN 1 */
 
@@ -124,13 +132,13 @@ char *ptr_char0;
 		  HAL_UART_Transmit_IT(&huart2, &DISP_ADRESS, 1);
 		  HAL_UART_Transmit_IT(&huart2, &tranceve_array[frame][0], TRANCIEVE_ARRAY_SIZE);
 		  HAL_UART_Receive_IT(&huart2, recieve_array, RECIEVE_BUFFER_SIZE);
-		  /*do
+		  do
 		  {
 		    ptr_char0 = strstr((char*)recieve_array, "ok");
 		    HAL_Delay(1);
 		  }
 
-		  while (ptr_char0 == 0);*/
+		  while (ptr_char0 == 0);
 		  if (frame%2)
 		  {
 			  HAL_UART_Transmit_IT(&huart2, &VIDEO_1, 1);
@@ -140,8 +148,8 @@ char *ptr_char0;
 			  HAL_UART_Transmit_IT(&huart2, &VIDEO_2, 1);
 		  }
 
-		  //CDC_Transmit_FS((uint8_t*)"Hello World!", strlen("Hello World!"));
-		  CDC_Transmit_FS(&tranceve_array[frame][0], 256);
+		  CDC_Transmit_FS((uint8_t*)"Frame refresh\r\n", strlen("Frame refresh\r\n"));
+		  //CDC_Transmit_FS(&tranceve_array[frame][0], 10);
 		  frame++;
 		  if (frame == MAX_FRAME)
 		  {
@@ -163,6 +171,8 @@ char *ptr_char0;
 
 /** System Clock Configuration
 */
+
+
 void SystemClock_Config(void)
 {
 
@@ -253,9 +263,9 @@ static void MX_USART2_UART_Init(void)
 
 }
 
-/** Configure pins as 
-        * Analog 
-        * Input 
+/** Configure pins as
+        * Analog
+        * Input
         * Output
         * EVENT_OUT
         * EXTI
@@ -277,19 +287,19 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin 
+  /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin
                            MEMS_INT2_Pin */
-  GPIO_InitStruct.Pin = DRDY_Pin|MEMS_INT3_Pin|MEMS_INT4_Pin|MEMS_INT1_Pin 
+  GPIO_InitStruct.Pin = DRDY_Pin|MEMS_INT3_Pin|MEMS_INT4_Pin|MEMS_INT1_Pin
                           |MEMS_INT2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_I2C_SPI_Pin LD4_Pin LD3_Pin LD5_Pin 
-                           LD7_Pin LD9_Pin LD10_Pin LD8_Pin 
+  /*Configure GPIO pins : CS_I2C_SPI_Pin LD4_Pin LD3_Pin LD5_Pin
+                           LD7_Pin LD9_Pin LD10_Pin LD8_Pin
                            LD6_Pin */
-  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin 
-                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin 
+  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin
+                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin
                           |LD6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -319,8 +329,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin 
-                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin 
+  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin
+                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin
                           |LD6_Pin, GPIO_PIN_RESET);
 
 }
@@ -338,10 +348,10 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler */
   /* User can add his own implementation to report the HAL error return state */
-  while(1) 
+  while(1)
   {
   }
-  /* USER CODE END Error_Handler */ 
+  /* USER CODE END Error_Handler */
 }
 
 #ifdef USE_FULL_ASSERT
@@ -366,10 +376,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,5 +1,5 @@
-Src/usb_device.o: ../Src/usb_device.c \
- C:/Users/IGOR/git/firstep/displayTest/Inc/usb_device.h \
+Drivers/CMSIS/Device/ST/STM32F3xx/Source/Templates/system_stm32f3xx.o: \
+ ../Drivers/CMSIS/Device/ST/STM32F3xx/Source/Templates/system_stm32f3xx.c \
  C:/Users/IGOR/git/firstep/displayTest/Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f3xx.h \
  C:/Users/IGOR/git/firstep/displayTest/Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f303xc.h \
  C:/Users/IGOR/git/firstep/displayTest/Drivers/CMSIS/Include/core_cm4.h \
@@ -31,20 +31,7 @@ Src/usb_device.o: ../Src/usb_device.c \
  C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h \
  C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h \
  C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h \
- C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- C:/Users/IGOR/git/firstep/displayTest/Inc/usbd_conf.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h \
- C:/Users/IGOR/git/firstep/displayTest/Inc/usbd_desc.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
- C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
- C:/Users/IGOR/git/firstep/displayTest/Inc/usbd_cdc_if.h
-
-C:/Users/IGOR/git/firstep/displayTest/Inc/usb_device.h:
+ C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h
 
 C:/Users/IGOR/git/firstep/displayTest/Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f3xx.h:
 
@@ -109,25 +96,3 @@ C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx
 C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h:
 
 C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Inc/usbd_conf.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Inc/usbd_desc.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
-
-C:/Users/IGOR/git/firstep/displayTest/Inc/usbd_cdc_if.h:
