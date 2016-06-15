@@ -10,10 +10,10 @@
 
 
 
-#define TRANCIEVE_ARRAY_SIZE 	10
+#define TRANCIEVE_ARRAY_SIZE 	257
 #define RECIEVE_BUFFER_SIZE 	10
 
-#define TIMER_1_STOP_VALUE	10
+#define TIMER_1_STOP_VALUE	1000
 
 volatile uint32_t timer1;
 
