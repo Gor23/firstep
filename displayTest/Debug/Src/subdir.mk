@@ -7,6 +7,7 @@ C_SRCS += \
 ../Src/main.c \
 ../Src/stm32f3xx_hal_msp.c \
 ../Src/stm32f3xx_it.c \
+../Src/strings.c \
 ../Src/usb_device.c \
 ../Src/usbd_cdc_if.c \
 ../Src/usbd_conf.c \
@@ -16,6 +17,7 @@ OBJS += \
 ./Src/main.o \
 ./Src/stm32f3xx_hal_msp.o \
 ./Src/stm32f3xx_it.o \
+./Src/strings.o \
 ./Src/usb_device.o \
 ./Src/usbd_cdc_if.o \
 ./Src/usbd_conf.o \
@@ -25,6 +27,7 @@ C_DEPS += \
 ./Src/main.d \
 ./Src/stm32f3xx_hal_msp.d \
 ./Src/stm32f3xx_it.d \
+./Src/strings.d \
 ./Src/usb_device.d \
 ./Src/usbd_cdc_if.d \
 ./Src/usbd_conf.d \

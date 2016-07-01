@@ -10,13 +10,12 @@
 
 
 
-#define TRANCIEVE_ARRAY_SIZE 	257
+#define TRANCIEVE_ARRAY_SIZE 	256
 #define RECIEVE_BUFFER_SIZE 	10
 
-#define TIMER_1_STOP_VALUE	1000
+#define TIMER_1_STOP_VALUE	10
 
-volatile uint32_t timer1;
-
+extern volatile uint32_t timer1;
 
 
 #endif /* MAIN_H_ */

@@ -35,9 +35,7 @@
 #include "usb_device.h"
 #include "main.h"
 #include "usbd_cdc_if.h"
-
-
-
+#include "string.h"
 
 
 
@@ -74,7 +72,10 @@ static void MX_USART2_UART_Init(void);
 //////////globals//////////
 //#define VIDEO_1  0x77;
 //#define VIDEO_1  0x72;
-#define MAX_FRAME	8
+#define MAX_FRAME	30
+
+volatile uint32_t timer1;
+
 
 int main(void)
 {
@@ -83,10 +84,11 @@ extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t DISP_ADRESS = 1;
 uint8_t VIDEO_1 = 0x77;
 uint8_t VIDEO_2 = 0x72;
-
+uint8_t yPosition = 0;
 uint8_t frame = 0;
-
+uint8_t init_array[] = {'I', 'N', 1, 1};
 uint8_t tranceve_array [MAX_FRAME] [TRANCIEVE_ARRAY_SIZE];
+uint8_t videoBuff [TRANCIEVE_ARRAY_SIZE];
 uint8_t testarray[] = "Test, test\r\n";
 uint8_t recieve_array [10];
 char *ptr_char0;
@@ -98,6 +100,7 @@ memset (&tranceve_array[4][0], 0x10, TRANCIEVE_ARRAY_SIZE);
 memset (&tranceve_array[5][0], 0x20, TRANCIEVE_ARRAY_SIZE);
 memset (&tranceve_array[6][0], 0x40, TRANCIEVE_ARRAY_SIZE);
 memset (&tranceve_array[7][0], 0x80, TRANCIEVE_ARRAY_SIZE);
+memset (videoBuff, 0x00, TRANCIEVE_ARRAY_SIZE);
 
   /* USER CODE BEGIN 1 */
 
@@ -127,36 +130,27 @@ memset (&tranceve_array[7][0], 0x80, TRANCIEVE_ARRAY_SIZE);
   /* USER CODE BEGIN WHILE */
   USER_UART_enable_RX_IT(&huart2);
   USER_UART_clear_rx(&huart2);
+  HAL_Delay(100);
+  HAL_UART_Transmit_IT(&huart2, (uint8_t*)&init_array, 4);
+  HAL_Delay(50);
   while (1)
   {
 	  //CDC_Transmit_FS((uint8_t*)"START", strlen("START"));
 	  if (timer1 == TIMER_1_STOP_VALUE)
 	  {
-		  tranceve_array[frame][0] = DISP_ADRESS;
-		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&tranceve_array[frame][0], TRANCIEVE_ARRAY_SIZE);
-		  do
-		  {
-			//HAL_UART_Receive_IT(&huart2, recieve_array, RECIEVE_BUFFER_SIZE);
-		    ptr_char0 = strstr((char*)user_rx_Buffer, "ok");
-		    //HAL_Delay(1);
-		  }
-
-		  while (ptr_char0 == 0);
-		  USER_UART_clear_rx(&huart2);
-		  if (frame%2)
-		  {
-			  HAL_UART_Transmit_IT(&huart2, &VIDEO_1, 1);
-		  }
-		  else
-		  {
-			  HAL_UART_Transmit_IT(&huart2, &VIDEO_2, 1);
-		  }
-
+		 memset (videoBuff, 0x00, TRANCIEVE_ARRAY_SIZE);
+		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)"BUFC", 4);
+		 HAL_Delay(1);
+		 //HAL_UART_Transmit_IT(&huart2, (uint8_t*)&tranceve_array[frame][0], TRANCIEVE_ARRAY_SIZE);
+		 Strings_put_string ("HELLO", videoBuff, frame, yPosition, 64);
+		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuff, TRANCIEVE_ARRAY_SIZE);
 		  //CDC_Transmit_FS((uint8_t*)"Frame refresh\r\n", strlen("Frame refresh\r\n"));
 		  //CDC_Transmit_FS(&tranceve_array[frame][0], 10);
 		  frame++;
 		  if (frame == MAX_FRAME)
 		  {
+			  if (yPosition>2) yPosition = 0;
+			  else yPosition++ ;
 			  frame = 0;
 		  }
 		  timer1 = 0;
