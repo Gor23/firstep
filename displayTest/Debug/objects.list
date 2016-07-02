@@ -25,7 +25,6 @@
 "Src/main.o"
 "Src/stm32f3xx_hal_msp.o"
 "Src/stm32f3xx_it.o"
-"Src/strings.o"
 "Src/usb_device.o"
 "Src/usbd_cdc_if.o"
 "Src/usbd_conf.o"
