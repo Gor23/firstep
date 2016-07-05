@@ -6,7 +6,7 @@
  *      Author: lihodey_i
  */
 
-#include "strings.h"
+#include "video.h"
 
 const uint8_t SmallFont[158][5] =
 {
@@ -169,29 +169,77 @@ const uint8_t SmallFont[158][5] =
  { 0x7C, 0x10, 0x38, 0x44, 0x38 },// FE ю
  { 0x48, 0x54, 0x34, 0x14, 0x7C } }; // FF я
 
-void Strings_put_string (char *inputString, char *outputArray, uint32_t xOffset, uint32_t yOffset, uint32_t bytesInRow)
+void Video_put_string (text *textPtr, videoBuff *videoBuffPtr)
 {
-	uint8_t i;
+	uint32_t temp;
+	uint16_t x = 0;
+	uint16_t letter;
 	uint8_t asciCode;
-	uint32_t offset =0;
-	uint8_t j;
-	yOffset = yOffset*bytesInRow;
 
-
-	for (i=0; i<strlen(inputString); i++)
+	for (letter=0; letter<strlen((const char*)textPtr->stringPtr); letter++)
 	{
-		asciCode = inputString[i];
+		asciCode = textPtr->stringPtr[letter];
 		if (asciCode > '>')
 		{
 			asciCode -= RUS_ARRAY_OFFSRET;
 		}
 		asciCode -=  ARRAY_SYMBOLS_OFFSET;
-		for (j=0; j<FONT_SIZE; j++)
+		temp = x+(letter*textPtr->letterWidth)+textPtr->xOffset+textPtr->yOffset;
+		for (x=0; x<textPtr->letterWidth + SPACE_WIDTH; x++)
 		{
-			outputArray[j+(i*FONT_SIZE)+offset+xOffset+yOffset] = SmallFont[asciCode][j];
+			if (temp < videoBuffPtr->size)
+			{
+				if (x<textPtr->letterWidth)
+				{
+					videoBuffPtr->bufferArrayPtr[temp] = SmallFont[asciCode][x];
+				}
+				else
+				{
+					videoBuffPtr->bufferArrayPtr[temp] = 0x00;
+				}
+			}
+			else
+			{
+				return;
+			}
+			temp++;
 		}
-		outputArray[j+(i*FONT_SIZE)+offset+xOffset+yOffset] = 0x00;        //пробел между буквами
-		offset++;
+
 	}
-};
+}
+
+
+
+
+void Video_put_image (image *imgPtr, videoBuff *videoBuffPtr)
+{
+	uint32_t y = 0;
+	uint32_t x = 0;
+	uint32_t temp = 0;
+
+
+	for (y=0; y < imgPtr->yLength; y++)
+	{
+		temp = x + y*videoBuffPtr->xLength + imgPtr->xOffset + imgPtr->yOffset;
+		for (x=0; x < imgPtr->xLength; x++)
+		{
+			if (temp<videoBuffPtr->size)
+			{
+				videoBuffPtr->bufferArrayPtr[temp++] = imgPtr->imageArrayPtr[x++];
+			}
+			else
+			{
+				return;
+			}
+
+		}
+	}
+}
+
+void Video_move_image (image *imgPtr, videoBuff *videoBuffPtr, uint16_t xMove, uint16_t yMove)
+{
+	memset (videoBuffPtr->bufferArrayPtr, 0x00, videoBuffPtr->size);
+	imgPtr->xOffset = xMove;
+	imgPtr->yOffset = videoBuffPtr->xLength*yMove;
+}
 

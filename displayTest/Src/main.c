@@ -36,7 +36,7 @@
 #include "main.h"
 #include "usbd_cdc_if.h"
 #include "string.h"
-
+#include "video.h"
 
 
 /* USER CODE BEGIN Includes */
@@ -77,21 +77,7 @@ static void MX_USART2_UART_Init(void);
 volatile uint32_t timer1;
 
 /////////////// image works/////////////
-typedef struct {
-   uint32_t size;
-   uint16_t xLength;		//bit (pixels)
-   uint16_t yLength;			// byte (matrix)
-   uint16_t xOffset;
-   uint16_t yOffset;
-   const uint8_t *imageArrayPtr;
-}image;
 
-typedef struct {
-   uint32_t size;
-   uint16_t xLength;			//bit (pixels)
-   uint16_t yLength;			// byte (matrix)
-   uint8_t *imageArrayPtr;
-}videoBuff;
 
 static const uint8_t lcd_image_ball[128] =
 { 0x00, 0x00, 0x80, 0x00, 0xE0, 0x10, 0x00, 0x04,
@@ -145,34 +131,14 @@ static const uint8_t lcd_image_mas[256] =
   0x0F, 0x07, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-void put_image (image *imgPtr, videoBuff *videoBuffPtr)
-{
-	uint32_t y = 0;
-	uint32_t x = 0;
-	uint32_t temp = 0;
 
-
-	for (y=0; y < imgPtr->yLength; y++)
-	{
-		for (x=0; x < imgPtr->xLength; x++)
-		{
-			videoBuffPtr->imageArrayPtr[x + y*videoBuffPtr->xLength + imgPtr->xOffset + imgPtr->yOffset] = imgPtr->imageArrayPtr[temp++];
-		}
-	}
-}
-
-void move_image (image *imgPtr, videoBuff *videoBuffPtr, uint32_t xMove, uint32_t yMove)
-{
-	memset (videoBuffPtr->imageArrayPtr, 0x00, videoBuffPtr->size);
-	imgPtr->xOffset = xMove;
-	imgPtr->yOffset = videoBuffPtr->xLength*yMove;
-}
 
 int main(void)
 {
 
 image ballImage;
 videoBuff mainBuffer;
+text testString;
 
 ////image properties////////
 
@@ -198,7 +164,13 @@ ballImage.imageArrayPtr = lcd_image_ball;
 mainBuffer.xLength = 64;
 mainBuffer.yLength = 4;
 mainBuffer.size = mainBuffer.xLength * mainBuffer.yLength * 8;
-mainBuffer.imageArrayPtr = videoBuffer;
+mainBuffer.bufferArrayPtr = videoBuffer;
+
+testString.letterHight = 8;
+testString.letterWidth = 5;
+testString.xOffset = 0;
+testString.yOffset = 0;
+testString.stringPtr = "òåñò òåñò";
 ///////////////////////////
 
 memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
@@ -240,14 +212,15 @@ memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
 	  if (timer1 == TIMER_1_STOP_VALUE)
 	  {
 		 memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
-		 //move_image(&ballImage, &mainBuffer, frame, 0);
+		 //Video_move_image(&ballImage, &mainBuffer, frame, 0);
 		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)"BUFC", 4);
 		 HAL_Delay(1);
 
 		 //HAL_UART_Transmit_IT(&huart2, (uint8_t*)&tranceve_array[frame][0], TRANCIEVE_ARRAY_SIZE);
-		 Strings_put_string ("ÐÈÂÅÐÑÎÔÒ", videoBuffer, frame, yPosition, 64);
 
-		 //put_image(&ballImage, &mainBuffer);
+
+		 //Video_put_image(&ballImage, &mainBuffer);
+		 Video_put_string(&testString, &mainBuffer);
 
 		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
 
