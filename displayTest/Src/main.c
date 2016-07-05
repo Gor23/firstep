@@ -72,7 +72,7 @@ static void MX_USART2_UART_Init(void);
 //////////globals//////////
 //#define VIDEO_1  0x77;
 //#define VIDEO_1  0x72;
-#define MAX_FRAME	32
+#define MAX_FRAME	8
 
 volatile uint32_t timer1;
 
@@ -88,7 +88,7 @@ typedef struct {
 
 typedef struct {
    uint32_t size;
-   uint16_t xLength;		//bit (pixels)
+   uint16_t xLength;			//bit (pixels)
    uint16_t yLength;			// byte (matrix)
    uint8_t *imageArrayPtr;
 }videoBuff;
@@ -182,7 +182,6 @@ extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t yPosition = 0;
 uint8_t frame = 0;
 uint8_t init_array[] = {'I', 'N', 1, 1};
-uint8_t tranceve_array [MAX_FRAME] [TRANCIEVE_ARRAY_SIZE];
 uint8_t videoBuffer[TRANCIEVE_ARRAY_SIZE];
 
 uint8_t recieve_array [10];
@@ -202,15 +201,6 @@ mainBuffer.size = mainBuffer.xLength * mainBuffer.yLength * 8;
 mainBuffer.imageArrayPtr = videoBuffer;
 ///////////////////////////
 
-
-memset (&tranceve_array[0][0], 0x01, TRANCIEVE_ARRAY_SIZE);
-memset (&tranceve_array[1][0], 0x02, TRANCIEVE_ARRAY_SIZE);
-memset (&tranceve_array[2][0], 0x04, TRANCIEVE_ARRAY_SIZE);
-memset (&tranceve_array[3][0], 0x08, TRANCIEVE_ARRAY_SIZE);
-memset (&tranceve_array[4][0], 0x10, TRANCIEVE_ARRAY_SIZE);
-memset (&tranceve_array[5][0], 0x20, TRANCIEVE_ARRAY_SIZE);
-memset (&tranceve_array[6][0], 0x40, TRANCIEVE_ARRAY_SIZE);
-memset (&tranceve_array[7][0], 0x80, TRANCIEVE_ARRAY_SIZE);
 memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
 
   /* USER CODE BEGIN 1 */
@@ -250,14 +240,14 @@ memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
 	  if (timer1 == TIMER_1_STOP_VALUE)
 	  {
 		 memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
-		 move_image(&ballImage, &mainBuffer, frame, 0);
+		 //move_image(&ballImage, &mainBuffer, frame, 0);
 		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)"BUFC", 4);
 		 HAL_Delay(1);
 
 		 //HAL_UART_Transmit_IT(&huart2, (uint8_t*)&tranceve_array[frame][0], TRANCIEVE_ARRAY_SIZE);
-		 //Strings_put_string ("HELLO", videoBuff, frame, yPosition, 64);
+		 Strings_put_string ("пхбепянтр", videoBuffer, frame, yPosition, 64);
 
-		 put_image(&ballImage, &mainBuffer);
+		 //put_image(&ballImage, &mainBuffer);
 
 		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
 

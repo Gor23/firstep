@@ -181,7 +181,11 @@ void Strings_put_string (char *inputString, char *outputArray, uint32_t xOffset,
 	for (i=0; i<strlen(inputString); i++)
 	{
 		asciCode = inputString[i];
-		asciCode -= ARRAY_SYMBOLS_OFFSET;
+		if (asciCode > '>')
+		{
+			asciCode -= RUS_ARRAY_OFFSRET;
+		}
+		asciCode -=  ARRAY_SYMBOLS_OFFSET;
 		for (j=0; j<FONT_SIZE; j++)
 		{
 			outputArray[j+(i*FONT_SIZE)+offset+xOffset+yOffset] = SmallFont[asciCode][j];

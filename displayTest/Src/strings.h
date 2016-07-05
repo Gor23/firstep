@@ -10,6 +10,7 @@
 
 #define FONT_SIZE 5 // пять с масиива плюс 1 пустой разделитель
 #define ARRAY_SYMBOLS_OFFSET 32
+#define RUS_ARRAY_OFFSRET 66
 
 #include "inttypes.h"
 #include "string.h"
