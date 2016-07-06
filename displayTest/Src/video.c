@@ -169,7 +169,7 @@ const uint8_t SmallFont[158][5] =
  { 0x7C, 0x10, 0x38, 0x44, 0x38 },// FE þ
  { 0x48, 0x54, 0x34, 0x14, 0x7C } }; // FF ÿ
 
-void Video_put_string (text *textPtr, videoBuff *videoBuffPtr)
+void Video_put_string (text *textPtr, image *videoBuffPtr)
 {
 	uint32_t temp;
 	uint16_t x = 0;
@@ -179,23 +179,23 @@ void Video_put_string (text *textPtr, videoBuff *videoBuffPtr)
 	for (letter=0; letter<strlen((const char*)textPtr->stringPtr); letter++)
 	{
 		asciCode = textPtr->stringPtr[letter];
-		if (asciCode > '>')
+		if (asciCode > 0x7D)
 		{
 			asciCode -= RUS_ARRAY_OFFSRET;
 		}
 		asciCode -=  ARRAY_SYMBOLS_OFFSET;
-		temp = x+(letter*textPtr->letterWidth)+textPtr->xOffset+textPtr->yOffset;
+		temp = (letter*(textPtr->letterWidth+SPACE_WIDTH))+textPtr->xOffset+textPtr->yOffset;
 		for (x=0; x<textPtr->letterWidth + SPACE_WIDTH; x++)
 		{
 			if (temp < videoBuffPtr->size)
 			{
 				if (x<textPtr->letterWidth)
 				{
-					videoBuffPtr->bufferArrayPtr[temp] = SmallFont[asciCode][x];
+					videoBuffPtr->imageArrayPtr[temp] = SmallFont[asciCode][x];
 				}
 				else
 				{
-					videoBuffPtr->bufferArrayPtr[temp] = 0x00;
+					videoBuffPtr->imageArrayPtr[temp] = 0x00;
 				}
 			}
 			else
@@ -216,16 +216,17 @@ void Video_put_image (image *imgPtr, videoBuff *videoBuffPtr)
 	uint32_t y = 0;
 	uint32_t x = 0;
 	uint32_t temp = 0;
+	uint32_t imagrByteCounter = 0;
 
 
 	for (y=0; y < imgPtr->yLength; y++)
 	{
-		temp = x + y*videoBuffPtr->xLength + imgPtr->xOffset + imgPtr->yOffset;
+		temp = y*videoBuffPtr->xLength + imgPtr->xOffset + imgPtr->yOffset;
 		for (x=0; x < imgPtr->xLength; x++)
 		{
 			if (temp<videoBuffPtr->size)
 			{
-				videoBuffPtr->bufferArrayPtr[temp++] = imgPtr->imageArrayPtr[x++];
+				videoBuffPtr->bufferArrayPtr[temp++] = imgPtr->imageArrayPtr[imagrByteCounter++];
 			}
 			else
 			{

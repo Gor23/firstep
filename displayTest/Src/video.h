@@ -24,7 +24,7 @@ typedef struct
    uint16_t yLength;			// byte (matrix)
    uint16_t xOffset;
    uint16_t yOffset;
-   const uint8_t *imageArrayPtr;
+   uint8_t *imageArrayPtr;
 } image;
 
 typedef struct
@@ -50,7 +50,7 @@ typedef struct
 
 
 
-void Video_put_string (text *textPtr, videoBuff *videoBuffPtr);
+void Video_put_string (text *textPtr, image *videoBuffPtr);
 void Video_put_image (image *imgPtr, videoBuff *videoBuffPtr);
 void Video_move_image (image *imgPtr, videoBuff *videoBuffPtr, uint16_t xMove, uint16_t yMove);
 
