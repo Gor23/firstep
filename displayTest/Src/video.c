@@ -208,6 +208,42 @@ void Video_put_string (text *textPtr, image *videoBuffPtr)
 	}
 }
 
+void Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr)
+{
+	uint32_t temp = 0;
+	uint16_t x = 0;
+	uint16_t y = 0;
+	uint16_t letter;
+	uint8_t asciCode;
+
+	for (letter=0; letter<strlen((char*)text); letter++)
+	{
+		asciCode = text[letter];
+		if (asciCode > 0x7D)
+		{
+			asciCode -= RUS_ARRAY_OFFSRET;
+		}
+		asciCode -=  ARRAY_SYMBOLS_OFFSET;
+		temp = (letter*(fonts[asciCode].image->width));
+		for (y=0; y<fonts[asciCode].image->height/8+1; y++)
+		{
+			for (x=0; x<fonts[asciCode].image->width; x++)
+			{
+				if (temp < videoBuffPtr->size)
+				{
+					videoBuffPtr->imageArrayPtr[temp] = fonts[asciCode].image->arrayPointer[x+y*fonts[asciCode].image->width];
+				}
+				else
+				{
+					return;
+				}
+				temp++;
+			}
+			//temp = ((letter+1)*(fonts[asciCode].image->width));
+			temp = temp + videoBuffPtr->xLength-fonts[asciCode].image->width;
+		}
+	}
+}
 
 
 
@@ -237,10 +273,42 @@ void Video_put_image (image *imgPtr, videoBuff *videoBuffPtr)
 	}
 }
 
+uint8_t Video_put_image_edge (image *imgPtr, videoBuff *videoBuffPtr)
+{
+	uint8_t answer = 1;
+	uint32_t y = 0;
+	uint32_t x = 0;
+	int32_t temp = 0;
+	uint32_t imagrByteCounter = 0;
+
+
+	for (y=0; y < imgPtr->yLength; y++)
+	{
+		temp = y*videoBuffPtr->xLength + imgPtr->xOffset + imgPtr->yOffset;
+		for (x=0; x < imgPtr->xLength; x++)
+		{
+			if ((temp<videoBuffPtr->xLength*(y+1))||(temp>videoBuffPtr->xLength))
+			{
+				videoBuffPtr->bufferArrayPtr[temp++] = imgPtr->imageArrayPtr[imagrByteCounter++];
+				answer = 0;
+			}
+			else
+			{
+				break;
+			}
+
+		}
+	}
+	return answer;
+}
+
 void Video_move_image (image *imgPtr, videoBuff *videoBuffPtr, uint16_t xMove, uint16_t yMove)
 {
 	memset (videoBuffPtr->bufferArrayPtr, 0x00, videoBuffPtr->size);
 	imgPtr->xOffset = xMove;
 	imgPtr->yOffset = videoBuffPtr->xLength*yMove;
 }
+
+
+
 

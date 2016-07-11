@@ -41,7 +41,7 @@ Src/main.o: ../Src/main.c \
  C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
  C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h \
- ../Src/video.h
+ ../Src/video.h ../Src/fonts.h
 
 C:/Users/IGOR/git/firstep/displayTest/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h:
 
@@ -130,3 +130,5 @@ C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Co
 C:/Users/IGOR/git/firstep/displayTest/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:
 
 ../Src/video.h:
+
+../Src/fonts.h:
