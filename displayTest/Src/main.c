@@ -73,9 +73,10 @@ static void MX_USART2_UART_Init(void);
 //#define VIDEO_1  0x77;
 //#define VIDEO_1  0x72;
 #define MAX_FRAME	10
-#define TEXT_BUF_SIZE 256
+
 
 volatile uint32_t timer1;
+volatile uint32_t timer2;
 
 /////////////// image works/////////////
 
@@ -145,6 +146,7 @@ image textBuffer;
 videoBuff mainBuffer;
 text testString;
 
+
 ////image properties////////
 
 
@@ -153,24 +155,31 @@ extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t yPosition = 0;
 uint8_t frame = 0;
 uint8_t init_array[] = {'I', 'N', 1, 1};
+
 uint8_t videoBuffer[TRANCIEVE_ARRAY_SIZE];
 uint8_t textBuff[TEXT_BUF_SIZE];
+uint8_t *subStringPtr = 0;
+
+uint8_t ready = 0;
 uint8_t imageMode = 0;
 uint32_t ticks = 0;
+
 
 uint8_t recieve_array [10];
 char *ptr_char0;
 
 ///////////////////// set buffer an images properties
-ballImage.xLength = 25;
-ballImage.yLength = 4;
+ballImage.xLength = 64;
+ballImage.yLength = 32;
 ballImage.size = ballImage.xLength * ballImage.yLength;
 ballImage.xOffset = 0;
 ballImage.yOffset = 0;
-ballImage.imageArrayPtr = image_data_Font_0x55;
+ballImage.imageArrayPtr = imageRiversoft;
 
 textBuffer.xLength = 64;
-textBuffer.yLength = TEXT_BUF_SIZE/ballImage.xLength;
+textBuffer.yLength = TEXT_BUF_SIZE/textBuffer.xLength;
+textBuffer.visibleLeftEdge = 0;
+textBuffer.visibleRightEdge = textBuffer.xLength;
 textBuffer.size = TEXT_BUF_SIZE;
 textBuffer.xOffset = 0;
 textBuffer.yOffset = 0;
@@ -229,6 +238,13 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 	  {
 		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)"BUFC", 4);
 		 HAL_Delay(1);
+		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
+		 ready = 0;
+		 timer1 = 0;
+	  }
+
+	  if (timer2 == TIMER_2_STOP_VALUE)
+	  {
 		 memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
 		 if (imageMode)
 		 {
@@ -240,16 +256,27 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 			 //Video_move_image(&textBuffer, &mainBuffer, frame*2, yPosition);
 			 //Video_put_string(&testString, &textBuffer);
 			 //Video_put_image_edge (&textBuffer, &mainBuffer);
-			 Video_put_string_fonts((uint8_t*)"WELL", &Font_array, &textBuffer);
+			 //Video_put_string_fonts((uint8_t*)"WELLCOME", &Font_array, &textBuffer);
+			 	 /*memset (textBuffer.imageArrayPtr, 0x00, textBuffer.size);
+			 	 if (subStringPtr)
+				 {
+				 	subStringPtr = Video_put_string_fonts(subStringPtr, &Font_array, &textBuffer);
+				 }
+				 else
+				 {
+				 	subStringPtr = Video_put_string_fonts((uint8_t*)"WELLCOME", &Font_array, &textBuffer);
+				 }*/
+			 Video_put_and_move_string ((uint8_t*)"Русский вывод українська \"і\"", &Font2_array, &textBuffer);
 			 Video_put_image(&textBuffer, &mainBuffer);
+
 		 }
 
 
-		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
+
 
 		  ticks++;
-		 /* if (ticks>(1000/TIMER_1_STOP_VALUE*5)) imageMode = 1;
-		  else imageMode = 0;*/
+		  if (ticks>(1000/TIMER_1_STOP_VALUE*5)) imageMode = 1;
+		  else imageMode = 0;
 
 		  if (ticks == (1000/TIMER_1_STOP_VALUE*30)) ticks = 0;
 		  frame++;
@@ -259,7 +286,8 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 			  else yPosition++ ;
 			  frame = 0;
 		  }
-		  timer1 = 0;
+		  ready = 1;
+		  timer2 = 0;
 	  }
 
 

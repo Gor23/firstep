@@ -114,6 +114,11 @@ void TIM6_DAC_IRQHandler(void)
   {
 	  timer1++;
   }
+  if(timer2<TIMER_2_STOP_VALUE)
+  {
+	  timer2++;
+  }
+
 
 
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */

@@ -169,6 +169,13 @@ const uint8_t SmallFont[158][5] =
  { 0x7C, 0x10, 0x38, 0x44, 0x38 },// FE þ
  { 0x48, 0x54, 0x34, 0x14, 0x7C } }; // FF ÿ
 
+void Video_text_buffer_create()
+{
+
+};
+
+
+
 void Video_put_string (text *textPtr, image *videoBuffPtr)
 {
 	uint32_t temp;
@@ -208,9 +215,10 @@ void Video_put_string (text *textPtr, image *videoBuffPtr)
 	}
 }
 
-void Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr)
+uint8_t *Video_put_string_fonts (uint8_t *text, const tChar *fonts, image *videoBuffPtr)
 {
 	uint32_t temp = 0;
+	uint32_t letterOffset = 0;
 	uint16_t x = 0;
 	uint16_t y = 0;
 	uint16_t letter;
@@ -231,28 +239,53 @@ void Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr)
 		asciCode = text[letter];
 		if (asciCode > 0x7D)
 		{
-			asciCode -= RUS_ARRAY_OFFSRET;
+			//asciCode -= RUS_ARRAY_OFFSRET;
+			asciCode -= 1;
 		}
 		asciCode -=  ARRAY_SYMBOLS_OFFSET;
-		//temp = (letter*fonts[asciCode].image->width);
+
+
+		if(temp+fonts[asciCode].image->width>videoBuffPtr->visibleRightEdge)
+		{
+			text++;
+			return text;
+		}
 		for (y=0; y<hieghtInBytes; y++)
 		{
 			for (x=0; x<fonts[asciCode].image->width; x++)
 			{
-				if (temp < videoBuffPtr->size)
-				{
+				//if (temp < videoBuffPtr->xLength*(y+1))
+				//{
 					videoBuffPtr->imageArrayPtr[temp] = fonts[asciCode].image->arrayPointer[x+y*fonts[asciCode].image->width];
-				}
-				else
+				//}
+				/*else
 				{
-					return;
-				}
+					return letter-1;
+				}*/
 				temp++;
 			}
 			temp = temp + videoBuffPtr->xLength-fonts[asciCode].image->width;
 		}
-		//temp = ((letter+1)*(fonts[asciCode].image->width));
+
+		letterOffset += (fonts[asciCode].image->width);
+		temp = letterOffset;
 	}
+	return 0;
+}
+
+void Video_put_and_move_string (uint8_t *text, const tChar *fonts, image *videoBuffPtr)
+{
+	static uint8_t *subStringPtr;
+
+	 memset (videoBuffPtr->imageArrayPtr, 0x00, videoBuffPtr->size);
+	 if (subStringPtr)
+	 {
+	 	subStringPtr = Video_put_string_fonts(subStringPtr, fonts, videoBuffPtr);
+	 }
+	 else
+	 {
+	 	subStringPtr = Video_put_string_fonts(text, fonts, videoBuffPtr);
+	 }
 }
 
 
