@@ -208,9 +208,10 @@ void Video_put_string (text *textPtr, image *videoBuffPtr)
 	}
 }
 
-void Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr)
+uint8_t Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr)
 {
 	uint32_t temp = 0;
+	uint32_t letterOffset = 0;
 	uint16_t x = 0;
 	uint16_t y = 0;
 	uint16_t letter;
@@ -239,20 +240,22 @@ void Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr)
 		{
 			for (x=0; x<fonts[asciCode].image->width; x++)
 			{
-				if (temp < videoBuffPtr->size)
+				if (temp < videoBuffPtr->xLength*(y+1))
 				{
 					videoBuffPtr->imageArrayPtr[temp] = fonts[asciCode].image->arrayPointer[x+y*fonts[asciCode].image->width];
 				}
 				else
 				{
-					return;
+					return letter-1;
 				}
 				temp++;
 			}
 			temp = temp + videoBuffPtr->xLength-fonts[asciCode].image->width;
 		}
-		temp = ((letter+1)*(fonts[asciCode].image->width));
+		letterOffset += (fonts[asciCode].image->width);
+		temp = letterOffset;
 	}
+	return 0;
 }
 
 

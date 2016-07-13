@@ -55,7 +55,7 @@ typedef struct
 
 void Video_put_string (text *textPtr, image *videoBuffPtr);
 void Video_put_image (image *imgPtr, videoBuff *videoBuffPtr);
-void Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr);
+uint8_t Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr);
 uint8_t Video_put_image_edge (image *imgPtr, videoBuff *videoBuffPtr);
 void Video_move_image (image *imgPtr, videoBuff *videoBuffPtr, uint16_t xMove, uint16_t yMove);
 
