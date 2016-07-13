@@ -27,7 +27,7 @@ typedef struct
    uint16_t visibleRightEdge;	//visible to
    uint16_t visibleLeftEdge;	//visible from
    uint16_t xLength;			//bit (pixels)
-   uint16_t yLength;			// byte (matrix)
+   uint16_t yLength;			//byte (matrix)
    int16_t xOffset;				//x offset in bit
    int16_t yOffset;				//y offset in byte
    uint8_t *imageArrayPtr;		//pointer to array
@@ -63,6 +63,26 @@ typedef struct
 	uint16_t yOffset;
 	uint8_t *stringPtr;
 } textBuff;
+
+typedef struct
+{
+	image formImage;
+	uint16_t score1XOffset;
+	uint16_t score1YOffset;
+	uint16_t score2XOffset;
+	uint16_t score2YOffset;
+	uint16_t command1XOffset;
+	uint16_t command1yOffset;
+	uint16_t command2XOffset;
+	uint16_t command2yOffset;
+	const tChar *commandsFont;
+	const tChar *scoreFont;
+	uint8_t *score1Ptr;
+	uint8_t *score2Ptr;
+	uint8_t *command1Ptr;
+	uint8_t *command2Ptr;
+} scoreForm;
+
 
 
 

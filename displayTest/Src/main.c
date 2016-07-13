@@ -145,6 +145,7 @@ image ballImage;
 image textBuffer;
 videoBuff mainBuffer;
 text testString;
+scoreForm footballForm;
 
 
 ////image properties////////
@@ -169,6 +170,10 @@ uint8_t recieve_array [10];
 char *ptr_char0;
 
 ///////////////////// set buffer an images properties
+//footballForm.formImage
+
+
+
 ballImage.xLength = 64;
 ballImage.yLength = 32;
 ballImage.size = ballImage.xLength * ballImage.yLength;
@@ -266,7 +271,7 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 				 {
 				 	subStringPtr = Video_put_string_fonts((uint8_t*)"WELLCOME", &Font_array, &textBuffer);
 				 }*/
-			 Video_put_and_move_string ((uint8_t*)"Русский вывод українська \"і\"", &Font2_array, &textBuffer);
+			 Video_put_and_move_string ((uint8_t*)"Gothic font", &Font_array, &textBuffer);
 			 Video_put_image(&textBuffer, &mainBuffer);
 
 		 }
@@ -275,8 +280,8 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 
 
 		  ticks++;
-		  if (ticks>(1000/TIMER_1_STOP_VALUE*5)) imageMode = 1;
-		  else imageMode = 0;
+		  /*if (ticks>(1000/TIMER_1_STOP_VALUE*5)) imageMode = 1;
+		  else imageMode = 0;*/
 
 		  if (ticks == (1000/TIMER_1_STOP_VALUE*30)) ticks = 0;
 		  frame++;
