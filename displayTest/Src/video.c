@@ -251,7 +251,7 @@ void Video_put_string_fonts (uint8_t *text, tChar *fonts, image *videoBuffPtr)
 			}
 			temp = temp + videoBuffPtr->xLength-fonts[asciCode].image->width;
 		}
-		temp = ((letter+1)*(fonts[asciCode].image->width));
+		//temp = ((letter+1)*(fonts[asciCode].image->width));
 	}
 }
 
