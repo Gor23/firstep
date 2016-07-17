@@ -17,6 +17,7 @@
 
 #include "string.h"
 #include "fonts.h"
+#include "images.h"
 
 //extern static const tChar Font_array[];
 
@@ -95,5 +96,6 @@ uint8_t *Video_put_string_fonts (uint8_t *text, const tChar *fonts, image *video
 void Video_put_and_move_string (uint8_t *text, const tChar *fonts, image *videoBuffPtr);
 uint8_t Video_put_image_edge (image *imgPtr, videoBuff *videoBuffPtr);
 void Video_move_image (image *imgPtr, videoBuff *videoBuffPtr, uint16_t xMove, uint16_t yMove);
+uint8_t Video_put_gif (imageGif *imgPtr, videoBuff *videoBuffPtr);
 
 #endif /* STRINGS_H_ */

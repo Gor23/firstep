@@ -23,6 +23,7 @@
 "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.o"
 "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.o"
 "Src/fonts.o"
+"Src/images.o"
 "Src/main.o"
 "Src/stm32f3xx_hal_msp.o"
 "Src/stm32f3xx_it.o"

@@ -7,6 +7,7 @@
  */
 
 #include "video.h"
+#include "images.h"
 
 const uint8_t SmallFont[158][5] =
 {
@@ -309,6 +310,8 @@ void Video_put_image (image *imgPtr, videoBuff *videoBuffPtr)
 			}
 			else
 			{
+				x++;
+				x--;
 				return;
 			}
 
@@ -352,6 +355,43 @@ void Video_move_image (image *imgPtr, videoBuff *videoBuffPtr, uint16_t xMove, u
 	imgPtr->yOffset = videoBuffPtr->xLength*yMove;
 }
 
+uint8_t Video_put_gif (imageGif *imgPtr, videoBuff *videoBuffPtr)
+{
+	uint32_t y = 0;
+	uint32_t x = 0;
+	uint32_t temp = 0;
+	uint32_t imagrByteCounter = 0;
+	static uint8_t frames = 0;
+
+	imgPtr->imageArrayPtr = imgPtr->imageArrayPtr + frames*imgPtr->frameSize;
+
+	for (y=0; y < imgPtr->yLength; y++)
+	{
+		temp = y*videoBuffPtr->xLength + imgPtr->xOffset + imgPtr->yOffset;
+		for (x=0; x < imgPtr->xLength; x++)
+		{
+			if (temp<videoBuffPtr->size)
+			{
+				videoBuffPtr->bufferArrayPtr[temp++] = imgPtr->imageArrayPtr[imagrByteCounter++];
+			}
+			else
+			{
+				return 'E' ;
+			}
+
+		}
+	}
+	frames++;
+	if (frames == imgPtr->frames)
+	{
+		frames = 0;
+		return 'S';
+	}
+	else
+	{
+		return 'R';
+	}
+}
 
 
 
