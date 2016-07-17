@@ -33,14 +33,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f3xx_hal.h"
 #include "usb_device.h"
+
+
+/* USER CODE BEGIN Includes */
 #include "main.h"
 #include "usbd_cdc_if.h"
 #include "string.h"
 #include "video.h"
 #include "images.h"
-
-
-/* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
@@ -48,6 +48,7 @@
 TIM_HandleTypeDef htim6;
 
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -58,6 +59,7 @@ UART_HandleTypeDef huart2;
 void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_USART2_UART_Init(void);
 
@@ -67,9 +69,6 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
 //////////globals//////////
 //#define VIDEO_1  0x77;
 //#define VIDEO_1  0x72;
@@ -78,6 +77,8 @@ static void MX_USART2_UART_Init(void);
 
 volatile uint32_t timer1;
 volatile uint32_t timer2;
+volatile uint16_t timerStopValue = 100;
+volatile uint8_t ready = 0;
 
 /////////////// image works/////////////
 
@@ -269,99 +270,10 @@ static const uint8_t image_data_Font_0x55[] = {
 		0x00, 0x60, 0xe0, 0xe0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0xe0, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xe0, 0xe0, 0x60, 0x00, 0x00, 0x00, 0x07, 0x7f, 0xff, 0xf8, 0x80, 0x00, 0x00, 0xf0, 0xff, 0x1f, 0x00, 0x1f, 0xff, 0xf0, 0x00, 0x00, 0x80, 0xf8, 0xff, 0x7f, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x7f, 0xff, 0xf8, 0xff, 0x1f, 0x01, 0x00, 0x00, 0x00, 0x01, 0x3f, 0xff, 0xf8, 0xff, 0x7f, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+/* USER CODE END 0 */
 
 int main(void)
 {
-
-image ballImage;
-image textBuffer;
-videoBuff mainBuffer;
-text testString;
-scoreForm footballForm;
-imageGif goalGif;
-imageGif logoGif;
-
-
-////image properties////////
-
-
-extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
-
-uint8_t yPosition = 0;
-uint8_t frame = 0;
-uint8_t init_array[] = {'I', 'N', xMatrix, yMatrix};
-
-uint8_t videoBuffer[TRANCIEVE_ARRAY_SIZE];
-uint8_t textBuff[TEXT_BUF_SIZE];
-uint8_t *subStringPtr = 0;
-
-uint8_t ready = 0;
-uint8_t imageMode = 1;
-uint32_t ticks = 0;
-
-
-uint8_t recieve_array [10];
-char *ptr_char0;
-
-///////////////////// set buffer an images properties
-//footballForm.formImage
-
-goalGif.frames = 14;
-goalGif.frameSize = 1024;
-goalGif.imageArrayPtr = goal;
-goalGif.xLength = 128;
-goalGif.xOffset = 0;
-goalGif.yLength = 8;
-goalGif.yOffset = 0;
-goalGif.currentFrame = 0;
-goalGif.repeats = 20;
-goalGif.repeatsFrom = 12;
-
-logoGif.frames = 4;
-logoGif.frameSize = 1024;
-logoGif.imageArrayPtr = logo;
-logoGif.xLength = 128;
-logoGif.xOffset = 0;
-logoGif.yLength = 8;
-logoGif.yOffset = 0;
-logoGif.currentFrame = 0;
-logoGif.repeats = 0;
-logoGif.repeatsFrom = 0;
-
-
-
-
-
-ballImage.xLength = 64;
-ballImage.yLength = 4;
-ballImage.size = ballImage.xLength * ballImage.yLength;
-ballImage.xOffset = 0;
-ballImage.yOffset = 0;
-ballImage.imageArrayPtr = imageRiversoft;
-
-textBuffer.xLength = 128;
-textBuffer.yLength = TEXT_BUF_SIZE/textBuffer.xLength;
-textBuffer.visibleLeftEdge = 0;
-textBuffer.visibleRightEdge = textBuffer.xLength;
-textBuffer.size = TEXT_BUF_SIZE;
-textBuffer.xOffset = 0;
-textBuffer.yOffset = 0;
-textBuffer.imageArrayPtr = textBuff;
-
-mainBuffer.xLength = 128;
-mainBuffer.yLength = TRANCIEVE_ARRAY_SIZE/mainBuffer.xLength;
-mainBuffer.size = TRANCIEVE_ARRAY_SIZE;
-mainBuffer.bufferArrayPtr = videoBuffer;
-
-testString.letterHight = 8;
-testString.letterWidth = 5;
-testString.xOffset = 0;
-testString.yOffset = 0;
-testString.stringPtr = "Риверсофт";
-///////////////////////////
-
-memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
-memset (textBuff, 0x00, TEXT_BUF_SIZE);
 
   /* USER CODE BEGIN 1 */
 
@@ -377,14 +289,113 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_TIM6_Init();
   MX_USART2_UART_Init();
   MX_USB_DEVICE_Init();
 
-  HAL_TIM_Base_Start_IT(&htim6);
-
   /* USER CODE BEGIN 2 */
+  image ballImage;
+  image textBuffer;
+  image commandTextBuffer;
+  videoBuff mainBuffer;
+  text testString;
+  scoreForm footballForm;
+  imageGif goalGif;
+  imageGif logoGif;
 
+
+  ////image properties////////
+
+
+  //extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
+
+  uint8_t yPosition = 0;
+  uint8_t frame = 0;
+  uint8_t init_array[] = {'I', 'N', xMatrix, yMatrix};
+
+  uint8_t videoBuffer[TRANCIEVE_ARRAY_SIZE];
+  uint8_t textBuff[TEXT_BUF_SIZE];
+  uint8_t commandTextBuff [COMM_TEXT_BUF_SIZE];
+  uint8_t *subStringPtr = 0;
+
+
+  uint8_t imageMode = LOGO_MODE;
+  uint32_t ticks = 40;
+
+
+  uint8_t recieve_array [10];
+  char *ptr_char0;
+
+  ///////////////////// set buffer an images properties
+  //footballForm.formImage
+
+  goalGif.frames = 14;
+  goalGif.frameSize = 1024;
+  goalGif.imageArrayPtr = goal;
+  goalGif.xLength = 128;
+  goalGif.xOffset = 0;
+  goalGif.yLength = 8;
+  goalGif.yOffset = 0;
+  goalGif.currentFrame = 0;
+  goalGif.repeats = 20;
+  goalGif.repeatsFrom = 12;
+
+  logoGif.frames = 4;
+  logoGif.frameSize = 1024;
+  logoGif.imageArrayPtr = logo;
+  logoGif.xLength = 128;
+  logoGif.xOffset = 0;
+  logoGif.yLength = 8;
+  logoGif.yOffset = 0;
+  logoGif.currentFrame = 0;
+  logoGif.repeats = 0;
+  logoGif.repeatsFrom = 0;
+
+
+
+
+
+  ballImage.xLength = 64;
+  ballImage.yLength = 4;
+  ballImage.size = ballImage.xLength * ballImage.yLength;
+  ballImage.xOffset = 0;
+  ballImage.yOffset = 0;
+  ballImage.imageArrayPtr = imageRiversoft;
+
+  textBuffer.xLength = 128;
+  textBuffer.yLength = TEXT_BUF_SIZE/textBuffer.xLength;
+  textBuffer.visibleLeftEdge = 0;
+  textBuffer.visibleRightEdge = textBuffer.xLength;
+  textBuffer.size = TEXT_BUF_SIZE;
+  textBuffer.xOffset = 0;
+  textBuffer.yOffset = 0;
+  textBuffer.imageArrayPtr = textBuff;
+
+  commandTextBuffer.xLength = 128;
+  commandTextBuffer.yLength = COMM_TEXT_BUF_SIZE/textBuffer.xLength;
+  commandTextBuffer.visibleLeftEdge = 0;
+  commandTextBuffer.visibleRightEdge = commandTextBuffer.xLength;
+  commandTextBuffer.size = COMM_TEXT_BUF_SIZE;
+  commandTextBuffer.xOffset = 0;
+  commandTextBuffer.yOffset = 0;
+  commandTextBuffer.imageArrayPtr = commandTextBuff;
+
+  mainBuffer.xLength = 128;
+  mainBuffer.yLength = TRANCIEVE_ARRAY_SIZE/mainBuffer.xLength;
+  mainBuffer.size = TRANCIEVE_ARRAY_SIZE;
+  mainBuffer.bufferArrayPtr = videoBuffer;
+
+  testString.letterHight = 8;
+  testString.letterWidth = 5;
+  testString.xOffset = 0;
+  testString.yOffset = 0;
+  testString.stringPtr = "Риверсофт";
+  ///////////////////////////
+
+  memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
+  memset (textBuff, 0x00, TEXT_BUF_SIZE);
+  HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -393,7 +404,7 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
   USER_UART_clear_rx(&huart2);
   HAL_Delay(100);
   HAL_UART_Transmit_IT(&huart2, (uint8_t*)&init_array, 4);
-  HAL_Delay(150);
+  HAL_Delay(100);
   while (1)
   {
 	  //CDC_Transmit_FS((uint8_t*)"START", strlen("START"));
@@ -401,17 +412,58 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 	  {
 		// memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
 		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)"BUFC", 4);
+		 HAL_Delay(20);
+		 //HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
+		 HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
 		 HAL_Delay(10);
-		// Video_put_and_move_string ((uint8_t*)"Your message can display there", &Font_array, &textBuffer);
-		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
-		 HAL_Delay(10);
-		 ready = 0;
 		 timer1 = 0;
 	  }
 
-	  if (timer2 == TIMER_2_STOP_VALUE)
+	  if ((timer2 == timerStopValue)&&(!ready))
 	  {
 		 memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
+		 switch (imageMode)
+		 {
+		 case LOGO_MODE:
+			 timerStopValue = 250;
+			 Video_put_gif (&logoGif, &mainBuffer);
+			 ticks--;
+			 if (!ticks)
+			 {
+				 imageMode = GOAL_MODE;
+				 ticks = 80;
+			 }
+			 break;
+
+		 case GOAL_MODE:
+			 timerStopValue = 75;
+			 if (Video_put_gif (&goalGif, &mainBuffer) == 'S')
+				 {
+				 	 imageMode = SCORE_MODE;
+				 	 ticks = 20;
+				 }
+			 break;
+
+		 case SCORE_MODE:
+			 timerStopValue = 400;
+			 Video_put_string_fonts ((uint8_t*)"5:0", &Font2_array, &textBuffer);
+			 Video_put_and_move_string ((uint8_t*)"аргентина - ямайка", &FontSmall_array, &commandTextBuffer);
+			 Video_move_image(&textBuffer, &mainBuffer, 18, 0);
+			 Video_move_image(&commandTextBuffer, &mainBuffer, 0, 6);
+			 Video_put_image(&textBuffer, &mainBuffer);
+			 Video_put_image(&commandTextBuffer, &mainBuffer);
+			 ticks--;
+
+			 if (!ticks)
+			 {
+				 //imageMode = LOGO_MODE;
+				 ticks = 80;
+			 }
+			 break;
+
+		 default: break;
+		 }
+/*
 		 if (imageMode)
 		 {
 			 Video_put_gif (&goalGif, &mainBuffer);
@@ -424,36 +476,17 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 			 //Video_put_string(&testString, &textBuffer);
 			 //Video_put_image_edge (&textBuffer, &mainBuffer);
 			 //Video_put_string_fonts((uint8_t*)"WELLCOME", &Font_array, &textBuffer);
-			 	 /*memset (textBuffer.imageArrayPtr, 0x00, textBuffer.size);
-			 	 if (subStringPtr)
-				 {
-				 	subStringPtr = Video_put_string_fonts(subStringPtr, &Font_array, &textBuffer);
-				 }
-				 else
-				 {
-				 	subStringPtr = Video_put_string_fonts((uint8_t*)"WELLCOME", &Font_array, &textBuffer);
-				 }*/
-			 Video_put_and_move_string ((uint8_t*)"Your massage", &Font2_array, &textBuffer);
-			 Video_move_image(&textBuffer, &mainBuffer, 0, 3);
+
+			 Video_put_string_fonts ((uint8_t*)"5:0", &Font2_array, &textBuffer);
+			 Video_put_and_move_string ((uint8_t*)"аргентина - ямайка", &FontSmall_array, &commandTextBuffer);
+			 Video_move_image(&textBuffer, &mainBuffer, 16, 0);
+			 Video_move_image(&commandTextBuffer, &mainBuffer, 0, 6);
 			 Video_put_image(&textBuffer, &mainBuffer);
+			 Video_put_image(&commandTextBuffer, &mainBuffer);
 
 		 }
 
-
-
-
-		  /*ticks++;
-		  if (ticks>(1000/TIMER_1_STOP_VALUE*5)) imageMode = 1;
-		  else imageMode = 0;*/
-
-		  if (ticks == (1000/TIMER_1_STOP_VALUE*30)) ticks = 0;
-		  frame++;
-		  if (frame == MAX_FRAME)
-		  {
-			  if (yPosition>2) yPosition = 0;
-			  else yPosition++ ;
-			  frame = 0;
-		  }
+*/
 		  ready = 1;
 		  timer2 = 0;
 	  }
@@ -471,8 +504,6 @@ memset (textBuff, 0x00, TEXT_BUF_SIZE);
 
 /** System Clock Configuration
 */
-
-
 void SystemClock_Config(void)
 {
 
@@ -521,25 +552,23 @@ void SystemClock_Config(void)
 /* TIM6 init function */
 static void MX_TIM6_Init(void)
 {
+	  TIM_MasterConfigTypeDef sMasterConfig;
 
-  TIM_MasterConfigTypeDef sMasterConfig;
+	  htim6.Instance = TIM6;
+	  htim6.Init.Prescaler = 7199;
+	  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+	  htim6.Init.Period = 9;
+	  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
 
-  htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 7199;
-  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 9;
-  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
+	  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
 }
 
 /* USART2 init function */
@@ -563,9 +592,24 @@ static void MX_USART2_UART_Init(void)
 
 }
 
-/** Configure pins as
-        * Analog
-        * Input
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel7_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
+
+}
+
+/** Configure pins as 
+        * Analog 
+        * Input 
         * Output
         * EVENT_OUT
         * EXTI
@@ -587,19 +631,19 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin
+  /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin 
                            MEMS_INT2_Pin */
-  GPIO_InitStruct.Pin = DRDY_Pin|MEMS_INT3_Pin|MEMS_INT4_Pin|MEMS_INT1_Pin
+  GPIO_InitStruct.Pin = DRDY_Pin|MEMS_INT3_Pin|MEMS_INT4_Pin|MEMS_INT1_Pin 
                           |MEMS_INT2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_I2C_SPI_Pin LD4_Pin LD3_Pin LD5_Pin
-                           LD7_Pin LD9_Pin LD10_Pin LD8_Pin
+  /*Configure GPIO pins : CS_I2C_SPI_Pin LD4_Pin LD3_Pin LD5_Pin 
+                           LD7_Pin LD9_Pin LD10_Pin LD8_Pin 
                            LD6_Pin */
-  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin
-                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin
+  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin 
+                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin 
                           |LD6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -629,8 +673,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin
-                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin
+  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin 
+                          |LD7_Pin|LD9_Pin|LD10_Pin|LD8_Pin 
                           |LD6_Pin, GPIO_PIN_RESET);
 
 }
@@ -651,7 +695,7 @@ void Error_Handler(void)
   while(1)
   {
   }
-  /* USER CODE END Error_Handler */
+  /* USER CODE END Error_Handler */ 
 }
 
 #ifdef USE_FULL_ASSERT
@@ -676,10 +720,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-*/
+*/ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -34,17 +34,15 @@
 #include "stm32f3xx_hal.h"
 #include "stm32f3xx.h"
 #include "stm32f3xx_it.h"
-#include "main.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "main.h"
 /* USER CODE END 0 */
-
-
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
 extern TIM_HandleTypeDef htim6;
+extern DMA_HandleTypeDef hdma_usart2_tx;
 extern UART_HandleTypeDef huart2;
 
 /******************************************************************************/
@@ -72,6 +70,20 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f3xx.s).                    */
 /******************************************************************************/
+
+/**
+* @brief This function handles DMA1 channel7 global interrupt.
+*/
+void DMA1_Channel7_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 0 */
+  ready = 0;
+  /* USER CODE END DMA1_Channel7_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_tx);
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel7_IRQn 1 */
+}
 
 /**
 * @brief This function handles USB low priority or CAN_RX0 interrupts.
@@ -110,19 +122,12 @@ void TIM6_DAC_IRQHandler(void)
 
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
-  if(timer1<TIMER_1_STOP_VALUE)
-  {
-	  timer1++;
-  }
-  if(timer2<TIMER_2_STOP_VALUE)
-  {
-	  timer2++;
-  }
-
-
 
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
-
+  if (timer1<TIMER_1_STOP_VALUE)
+	  timer1++;
+  if (timer2<timerStopValue)
+	  timer2++;
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 

@@ -159,7 +159,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f3xx_hal.h"
-#include "string.h"
 
 /** @addtogroup STM32F3xx_HAL_Driver
   * @{
@@ -183,10 +182,6 @@
 /**
   * @}
   */
-///////////user modification/////////
-
-///////////////////
-
 
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -199,10 +194,59 @@ static void UART_DMATxHalfCplt(DMA_HandleTypeDef *hdma);
 static void UART_DMAReceiveCplt(DMA_HandleTypeDef *hdma);
 static void UART_DMARxHalfCplt(DMA_HandleTypeDef *hdma);
 static void UART_DMAError(DMA_HandleTypeDef *hdma);
-
 /**
   * @}
   */
+
+/* USER CODE BEGIN 1 */
+////to handler of uart recieve//////////
+void USER_UART_Receive_IT(UART_HandleTypeDef *huart)
+{
+  uint16_t uhMask;
+
+  /* Check that a Rx process is not already ongoing */
+
+
+
+    //huart->ErrorCode = HAL_UART_ERROR_NONE;
+    //huart->RxState = HAL_UART_STATE_BUSY_RX;
+
+   huart->RxXferSize = sizeof(user_rx_Buffer);
+
+
+    /* Computation of UART mask to apply to RDR register */
+    UART_MASK_COMPUTATION(huart);
+    uhMask = huart->Mask;
+
+
+    user_rx_Buffer[huart->RxXferCount++] = (uint8_t)(huart->Instance->RDR & (uint8_t)uhMask);
+        if (huart->RxXferCount >= huart->RxXferSize)
+        {
+        	huart->RxXferCount = 0;
+        }
+
+}
+
+
+//clear user_rx buffer
+void USER_UART_clear_rx (UART_HandleTypeDef *huart)
+{
+	huart->RxXferCount = 0;
+	memset (user_rx_Buffer, 0, sizeof(user_rx_Buffer));
+}
+
+void USER_UART_enable_RX_IT(UART_HandleTypeDef *huart)
+{
+	 /* Enable the UART Parity Error Interrupt */
+	    __HAL_UART_ENABLE_IT(huart, UART_IT_PE);
+
+	    /* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
+	    __HAL_UART_ENABLE_IT(huart, UART_IT_ERR);
+
+	    /* Enable the UART Data Register not empty Interrupt */
+	    __HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
+}
+/* USER CODE END 1 */
 
 /* Exported functions --------------------------------------------------------*/
 
@@ -283,59 +327,6 @@ static void UART_DMAError(DMA_HandleTypeDef *hdma);
 
 */
 
-///////////user functions/////////////////
-///receive to buffer user_rx_Buffer[UART_RX_BUFFER_SIZE];
-
-
-////to handler of uart recieve//////////
-void USER_UART_Receive_IT(UART_HandleTypeDef *huart)
-{
-  uint16_t uhMask;
-
-  /* Check that a Rx process is not already ongoing */
-
-
-
-    //huart->ErrorCode = HAL_UART_ERROR_NONE;
-    //huart->RxState = HAL_UART_STATE_BUSY_RX;
-
-   huart->RxXferSize = sizeof(user_rx_Buffer);
-
-
-    /* Computation of UART mask to apply to RDR register */
-    UART_MASK_COMPUTATION(huart);
-    uhMask = huart->Mask;
-
-
-    user_rx_Buffer[huart->RxXferCount++] = (uint8_t)(huart->Instance->RDR & (uint8_t)uhMask);
-        if (huart->RxXferCount >= huart->RxXferSize)
-        {
-        	huart->RxXferCount = 0;
-        }
-
-}
-
-
-//clear user_rx buffer
-void USER_UART_clear_rx (UART_HandleTypeDef *huart)
-{
-	huart->RxXferCount = 0;
-	memset (user_rx_Buffer, 0, sizeof(user_rx_Buffer));
-}
-
-void USER_UART_enable_RX_IT(UART_HandleTypeDef *huart)
-{
-	 /* Enable the UART Parity Error Interrupt */
-	    __HAL_UART_ENABLE_IT(huart, UART_IT_PE);
-
-	    /* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
-	    __HAL_UART_ENABLE_IT(huart, UART_IT_ERR);
-
-	    /* Enable the UART Data Register not empty Interrupt */
-	    __HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
-}
-
-
 /**
   * @brief Initialize the UART mode according to the specified
   *        parameters in the UART_InitTypeDef and initialize the associated handle.
@@ -405,7 +396,6 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
   * @param huart: UART handle.
   * @retval HAL status
   */
-
 HAL_StatusTypeDef HAL_HalfDuplex_Init(UART_HandleTypeDef *huart)
 {
   /* Check the UART handle allocation */
@@ -814,7 +804,6 @@ HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, u
   * @param Timeout: Timeout duration.
   * @retval HAL status
   */
-
 HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
   uint16_t* tmp;
@@ -874,7 +863,6 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, ui
     return HAL_BUSY;
   }
 }
-
 
 /**
   * @brief Send an amount of data in interrupt mode.
@@ -1243,9 +1231,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
   /* UART in mode Receiver ---------------------------------------------------*/
   if((__HAL_UART_GET_IT(huart, UART_IT_RXNE) != RESET) && (__HAL_UART_GET_IT_SOURCE(huart, UART_IT_RXNE) != RESET))
   {
-	  //////user modification/////////////
-	  USER_UART_Receive_IT(huart);
-     //UART_Receive_IT(huart);
+    UART_Receive_IT(huart);
   }
 
   /* UART in mode Transmitter ------------------------------------------------*/

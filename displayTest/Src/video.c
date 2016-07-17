@@ -412,6 +412,9 @@ uint8_t Video_put_gif (imageGif *imgPtr, videoBuff *videoBuffPtr)
 		return 'R';
 	}
 }
+ Video_put_form (scoreForm *formPtr, videoBuff *videoBuffPtr)
+ {
 
+ }
 
 

@@ -890,17 +890,20 @@ void     HAL_DBGMCU_EnableDBGStopMode(void);
 void     HAL_DBGMCU_DisableDBGStopMode(void);
 void     HAL_DBGMCU_EnableDBGStandbyMode(void);
 void     HAL_DBGMCU_DisableDBGStandbyMode(void);
-
-
-/////////User uart functions////////////////
-#define UART_RX_BUFFER_SIZE 64
-uint8_t user_rx_Buffer[UART_RX_BUFFER_SIZE];
-void USER_UART_enable_RX_IT(UART_HandleTypeDef *huart);
-void USER_UART_clear_rx (UART_HandleTypeDef *huart);
-void USER_UART_Receive_IT(UART_HandleTypeDef *huart);
 /**
  * @}
+ *
+ *
+
  */
+
+/* USER CODE BEGIN Includes */
+#define UART_RX_BUFFER_SIZE 64
+ uint8_t user_rx_Buffer[UART_RX_BUFFER_SIZE];
+ void USER_UART_enable_RX_IT(UART_HandleTypeDef *huart);
+ void USER_UART_clear_rx (UART_HandleTypeDef *huart);
+ void USER_UART_Receive_IT(UART_HandleTypeDef *huart);
+ /* USER CODE END Includes */
 
 /**
  * @}

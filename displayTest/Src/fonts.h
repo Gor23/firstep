@@ -25,5 +25,6 @@ typedef struct
 
 extern const tChar Font_array[];
 extern const tChar Font2_array[];
+extern const tChar FontSmall_array[];
 
 #endif /* FONTS_H_ */

@@ -45,8 +45,7 @@
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
   * @{
   */
-#define APP_RX_DATA_SIZE  64
-#define APP_TX_DATA_SIZE  64
+  
 /** @defgroup USBD_CDC_IF
   * @brief header 
   * @{
@@ -97,8 +96,6 @@ extern USBD_CDC_ItfTypeDef  USBD_Interface_fops_FS;
 /** @defgroup USBD_CDC_IF_Exported_FunctionsPrototype
   * @{
   */ 
-//static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len);
-
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */

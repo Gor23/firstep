@@ -67,15 +67,13 @@ typedef struct
 
 typedef struct
 {
-	image formImage;
+	//image formImage;
 	uint16_t score1XOffset;
-	uint16_t score1YOffset;
+	uint16_t scoreYOffset;
 	uint16_t score2XOffset;
-	uint16_t score2YOffset;
-	uint16_t command1XOffset;
-	uint16_t command1yOffset;
+	uint16_t command1XOffset;;
 	uint16_t command2XOffset;
-	uint16_t command2yOffset;
+	uint16_t commandyOffset;
 	const tChar *commandsFont;
 	const tChar *scoreFont;
 	uint8_t *score1Ptr;
