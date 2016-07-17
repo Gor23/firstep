@@ -3825,8 +3825,6 @@ static const uint8_t image_data_Font2_0xff[42] = {
 static const tImage Font2_0xff = { image_data_Font2_0xff,
     14, 24};
 
-
-
 const tChar Font2_array[] = {
 
   // character: ' '

@@ -357,13 +357,17 @@ void Video_move_image (image *imgPtr, videoBuff *videoBuffPtr, uint16_t xMove, u
 
 uint8_t Video_put_gif (imageGif *imgPtr, videoBuff *videoBuffPtr)
 {
-	uint32_t y = 0;
-	uint32_t x = 0;
-	uint32_t temp = 0;
-	uint32_t imagrByteCounter = 0;
-	static uint8_t frames = 0;
 
-	imgPtr->imageArrayPtr = imgPtr->imageArrayPtr + frames*imgPtr->frameSize;
+	uint16_t y = 0;
+	uint16_t x = 0;
+	uint16_t temp = 0;
+	uint16_t imagrByteCounter = 0;
+	static uint8_t repeats = 0;
+	const uint8_t *frameArrayPtr;
+
+
+	frameArrayPtr = imgPtr->imageArrayPtr + imgPtr->frameSize*imgPtr->currentFrame;
+	imgPtr->currentFrame++;
 
 	for (y=0; y < imgPtr->yLength; y++)
 	{
@@ -372,7 +376,7 @@ uint8_t Video_put_gif (imageGif *imgPtr, videoBuff *videoBuffPtr)
 		{
 			if (temp<videoBuffPtr->size)
 			{
-				videoBuffPtr->bufferArrayPtr[temp++] = imgPtr->imageArrayPtr[imagrByteCounter++];
+				videoBuffPtr->bufferArrayPtr[temp++] = frameArrayPtr[imagrByteCounter++];
 			}
 			else
 			{
@@ -381,10 +385,26 @@ uint8_t Video_put_gif (imageGif *imgPtr, videoBuff *videoBuffPtr)
 
 		}
 	}
-	frames++;
-	if (frames == imgPtr->frames)
+
+	if (imgPtr->currentFrame == imgPtr->frames)
 	{
-		frames = 0;
+		if (imgPtr->repeats)
+		{
+			repeats++;
+			imgPtr->currentFrame = imgPtr->repeatsFrom;
+		}
+		else
+		{
+			repeats =0;
+			imgPtr->currentFrame = 0;
+			return 'S';
+		}
+
+	}
+	if ((repeats == imgPtr->repeats)&&(imgPtr->repeats))
+	{
+		repeats =0;
+		imgPtr->currentFrame = 0;
 		return 'S';
 	}
 	else

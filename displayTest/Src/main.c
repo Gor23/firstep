@@ -279,6 +279,7 @@ videoBuff mainBuffer;
 text testString;
 scoreForm footballForm;
 imageGif goalGif;
+imageGif logoGif;
 
 
 ////image properties////////
@@ -304,6 +305,31 @@ char *ptr_char0;
 
 ///////////////////// set buffer an images properties
 //footballForm.formImage
+
+goalGif.frames = 14;
+goalGif.frameSize = 1024;
+goalGif.imageArrayPtr = goal;
+goalGif.xLength = 128;
+goalGif.xOffset = 0;
+goalGif.yLength = 8;
+goalGif.yOffset = 0;
+goalGif.currentFrame = 0;
+goalGif.repeats = 20;
+goalGif.repeatsFrom = 12;
+
+logoGif.frames = 4;
+logoGif.frameSize = 1024;
+logoGif.imageArrayPtr = logo;
+logoGif.xLength = 128;
+logoGif.xOffset = 0;
+logoGif.yLength = 8;
+logoGif.yOffset = 0;
+logoGif.currentFrame = 0;
+logoGif.repeats = 0;
+logoGif.repeatsFrom = 0;
+
+
+
 
 
 ballImage.xLength = 64;

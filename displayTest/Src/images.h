@@ -12,15 +12,20 @@
 
 typedef struct
 {
-   uint16_t frames;
+   const uint8_t *imageArrayPtr;		//pointer to array
    uint16_t frameSize;
-   uint16_t xLength;			//bit (pixels)
-   uint16_t yLength;			//byte (matrix)
+   uint16_t xLength;
    int16_t xOffset;				//x offset in bit
    int16_t yOffset;				//y offset in byte
-   const uint8_t *imageArrayPtr;		//pointer to array
+   uint8_t yLength;
+   uint8_t frames;
+   uint8_t currentFrame;
+   uint8_t repeats;
+   uint8_t repeatsFrom;
 } imageGif;
 
+extern const uint8_t goal[];
+extern const uint8_t logo[];
 extern imageGif goalGif;
 extern imageGif logoGif;
 

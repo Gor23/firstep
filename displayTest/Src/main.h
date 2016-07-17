@@ -19,7 +19,7 @@
 #define TEXT_BUF_SIZE 512
 
 #define TIMER_1_STOP_VALUE	50
-#define TIMER_2_STOP_VALUE	60
+#define TIMER_2_STOP_VALUE	200
 
 extern volatile uint32_t timer1;
 extern volatile uint32_t timer2;
