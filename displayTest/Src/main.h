@@ -8,7 +8,7 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-
+#define UART_SPEED 256000
 
 #define xMatrix	2
 #define yMatrix 2
@@ -19,8 +19,9 @@
 
 #define TEXT_BUF_SIZE 1024
 #define COMM_TEXT_BUF_SIZE 256
+#define STRING_BUF_SIZE 2048
 
-#define TIMER_1_STOP_VALUE	50
+#define TIMER_1_STOP_VALUE	100
 #define TIMER_2_STOP_VALUE	200
 
 

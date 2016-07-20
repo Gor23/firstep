@@ -102,7 +102,7 @@ static const uint8_t imageBall[128] =
   0x00, 0x10, 0x08, 0x04, 0x02, 0x00, 0x00, 0x00};
 
 static const uint8_t imageRiversoft[256] =
-{ 0x00, 0x00, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+{ 0x50, 0x00, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
   0xF0, 0x00, 0xF0, 0x00, 0x00, 0xF0, 0x00, 0x00,
   0x00, 0xE0, 0xF0, 0x10, 0xE0, 0xF0, 0xF0, 0xF0,
   0xF0, 0xF0, 0xF0, 0x00, 0xE0, 0x1C, 0x0E, 0x0E,
@@ -133,7 +133,7 @@ static const uint8_t imageRiversoft[256] =
   0x70, 0x70, 0x70, 0x70, 0x70, 0x30, 0x1F, 0x00,
   0x06, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x00,
   0x0F, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x07, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x00};
+  0x07, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x50};
 
 static const char lcd_image_mas[1024] =
 { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -297,12 +297,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   image ballImage;
   image textBuffer;
+  image stringBuffer;
   image commandTextBuffer;
   videoBuff mainBuffer;
   text testString;
   scoreForm footballForm;
   imageGif goalGif;
   imageGif logoGif;
+
 
 
   ////image properties////////
@@ -313,10 +315,12 @@ int main(void)
   uint8_t yPosition = 0;
   uint8_t frame = 0;
   uint8_t init_array[] = {'I', 'N', xMatrix, yMatrix};
+  uint32_t xMove = 0;
 
   uint8_t videoBuffer[TRANCIEVE_ARRAY_SIZE];
   uint8_t textBuff[TEXT_BUF_SIZE];
   uint8_t commandTextBuff [COMM_TEXT_BUF_SIZE];
+  uint8_t stringBuff [STRING_BUF_SIZE];
   uint8_t *subStringPtr = 0;
 
 
@@ -372,6 +376,16 @@ int main(void)
   textBuffer.yOffset = 0;
   textBuffer.imageArrayPtr = textBuff;
 
+  stringBuffer.xLength = 256;
+  stringBuffer.yLength = STRING_BUF_SIZE/stringBuffer.xLength;
+  stringBuffer.visibleLeftEdge = 0;
+  stringBuffer.visibleRightEdge = stringBuffer.xLength;
+  stringBuffer.size = STRING_BUF_SIZE;
+  stringBuffer.xOffset = 0;
+  stringBuffer.yOffset = 0;
+  stringBuffer.imageArrayPtr = stringBuff;
+
+
   commandTextBuffer.xLength = 128;
   commandTextBuffer.yLength = COMM_TEXT_BUF_SIZE/textBuffer.xLength;
   commandTextBuffer.visibleLeftEdge = 0;
@@ -395,27 +409,36 @@ int main(void)
 
   memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
   memset (textBuff, 0x00, TEXT_BUF_SIZE);
+  memset (stringBuff, 0x00, STRING_BUF_SIZE);
   HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  USER_UART_enable_RX_IT(&huart2);
   USER_UART_clear_rx(&huart2);
+  USER_UART_enable_RX_IT(&huart2);
   HAL_Delay(100);
   HAL_UART_Transmit_IT(&huart2, (uint8_t*)&init_array, 4);
   HAL_Delay(100);
   while (1)
   {
 	  //CDC_Transmit_FS((uint8_t*)"START", strlen("START"));
-	  if (/*(timer1 == TIMER_1_STOP_VALUE)&&*/(ready))
+	  /*if (timer1 == TIMER_1_STOP_VALUE)
 	  {
 		// memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
 		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)"BUFC", 4);
 		 HAL_Delay(20);
+		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)&imageRiversoft, 256);
+		 //HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
+		 timer1 = 0;
+	  }*/
+	  if (ready)
+	  {
+		// memset (videoBuffer, 0x00, TRANCIEVE_ARRAY_SIZE);
+		 HAL_UART_Transmit_IT(&huart2, (uint8_t*)"BUFC", 4);
+		 HAL_Delay(10);
 		 //HAL_UART_Transmit_IT(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
 		 HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&videoBuffer, TRANCIEVE_ARRAY_SIZE);
-		 HAL_Delay(10);
 		 timer1 = 0;
 	  }
 
@@ -446,8 +469,8 @@ int main(void)
 
 		 case SCORE_MODE:
 			 timerStopValue = 400;
-			 Video_put_string_fonts ((uint8_t*)"5:0", &Font2_array, &textBuffer);
-			 Video_put_and_move_string ((uint8_t*)"аргентина - ямайка", &FontSmall_array, &commandTextBuffer);
+			 Video_put_string_fonts ((uint8_t*)"0:1", &Font2_array, &textBuffer);
+			 Video_put_and_move_string ((uint8_t*)"Франция - Португалия", &FontSmall_array, &commandTextBuffer);
 			 Video_move_image(&textBuffer, &mainBuffer, 18, 0);
 			 Video_move_image(&commandTextBuffer, &mainBuffer, 0, 6);
 			 Video_put_image(&textBuffer, &mainBuffer);
@@ -456,9 +479,26 @@ int main(void)
 
 			 if (!ticks)
 			 {
-				 //imageMode = LOGO_MODE;
+				 imageMode = LOGO_MODE;
 				 ticks = 80;
 			 }
+			 break;
+
+		 case STRING_MODE:
+			 timerStopValue = 150;
+			 Video_put_string_fonts ((uint8_t*)"Здесь могла быть", &Font2_array, &stringBuffer);
+			 Video_move_image(&stringBuffer, &mainBuffer, xMove, 1);
+			 Video_put_image(&stringBuffer, &mainBuffer);
+			 xMove += 4;
+			 if (xMove == 128)
+				 xMove = 0;
+			 ticks--;
+
+			 	if (!ticks)
+			    {
+			 		imageMode = LOGO_MODE;
+			 		ticks = 80;
+			 	}
 			 break;
 
 		 default: break;
@@ -576,7 +616,7 @@ static void MX_USART2_UART_Init(void)
 {
 
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 256000;
+  huart2.Init.BaudRate = UART_SPEED;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
