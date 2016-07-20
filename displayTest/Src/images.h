@@ -26,6 +26,7 @@ typedef struct
 
 extern const uint8_t goal[];
 extern const uint8_t logo[];
+extern const uint8_t imagesWinner[];
 extern imageGif goalGif;
 extern imageGif logoGif;
 

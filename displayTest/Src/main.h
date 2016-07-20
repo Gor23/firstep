@@ -25,7 +25,7 @@
 #define TIMER_2_STOP_VALUE	200
 
 
-enum modes {LOGO_MODE, SCORE_MODE, GOAL_MODE, STRING_MODE};
+enum modes {LOGO_MODE, SCORE_MODE, GOAL_MODE, STRING_MODE, WINNER_MODE};
 
 extern volatile uint32_t timer1;
 extern volatile uint32_t timer2;

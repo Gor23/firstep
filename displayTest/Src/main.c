@@ -304,6 +304,7 @@ int main(void)
   scoreForm footballForm;
   imageGif goalGif;
   imageGif logoGif;
+  imageGif winerGif;
 
 
 
@@ -345,6 +346,17 @@ int main(void)
   goalGif.repeats = 20;
   goalGif.repeatsFrom = 12;
 
+  winerGif.frames = 15;
+  winerGif.frameSize = 1024;
+  winerGif.imageArrayPtr = imagesWinner;
+  winerGif.xLength = 128;
+  winerGif.xOffset = 0;
+  winerGif.yLength = 8;
+  winerGif.yOffset = 0;
+  winerGif.currentFrame = 0;
+  winerGif.repeats = 0;
+  winerGif.repeatsFrom = 0;
+
   logoGif.frames = 4;
   logoGif.frameSize = 1024;
   logoGif.imageArrayPtr = logo;
@@ -355,8 +367,6 @@ int main(void)
   logoGif.currentFrame = 0;
   logoGif.repeats = 0;
   logoGif.repeatsFrom = 0;
-
-
 
 
 
@@ -460,12 +470,25 @@ int main(void)
 
 		 case GOAL_MODE:
 			 timerStopValue = 75;
+			 ticks--;
+			 Video_put_gif (&goalGif, &mainBuffer);
 			 if (Video_put_gif (&goalGif, &mainBuffer) == 'S')
 				 {
 				 	 imageMode = SCORE_MODE;
 				 	 ticks = 20;
 				 }
 			 break;
+
+		 case WINNER_MODE:
+		 			 timerStopValue = 75;
+		 			 ticks--;
+		 			 Video_put_gif (&winerGif, &mainBuffer);
+		 			 if (!ticks)
+		 			 {
+		 			 	imageMode = LOGO_MODE;
+		 			 	ticks = 40;
+		 			 }
+		 			 break;
 
 		 case SCORE_MODE:
 			 timerStopValue = 400;
@@ -479,8 +502,8 @@ int main(void)
 
 			 if (!ticks)
 			 {
-				 imageMode = LOGO_MODE;
-				 ticks = 80;
+				 imageMode =  WINNER_MODE;
+				 ticks = 500;
 			 }
 			 break;
 
